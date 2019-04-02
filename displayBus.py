@@ -24,6 +24,9 @@ if YAPI.RegisterHub(hub_url, errmsg) != YAPI.SUCCESS:
 # Desactive les exceptions dans l'API
 # YAPI.DisableExceptions()
 
+# Affichage du signal Wifi
+Wifi = YWireless.FirstWireless()
+
 Screen = YDisplay.FirstDisplay()
 if (Screen.isOnline()):
     print("Ecran connecte")
@@ -67,7 +70,7 @@ while True:
     try:
         mollaz2 = http_req(urlMollaz2)
         mollazf2Flag = True
-    except  Exception as ecx:
+    except Exception as ecx:
         print("Failure Accessing TPG Server (No 2):" + str(ecx))
         mollazf2Flag = False
 
@@ -85,8 +88,9 @@ while True:
         layer0.drawText(0, 0, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
 
         # Affichage du signal Wifi
-        # stringBuild = "RSSI:" + str(Wifi.get_linkQuality())
-        # layer0.drawText(128, 0, YDisplayLayer.ALIGN.TOP_RIGHT, stringBuild)
+        if Wifi is not None:
+            stringBuild = "RSSI:" + str(Wifi.get_linkQuality())
+            layer0.drawText(128, 0, YDisplayLayer.ALIGN.TOP_RIGHT, stringBuild)
 
         # Direction Athenaz
         try:
@@ -134,7 +138,7 @@ while True:
             stringBuild = str(mollaz2['prochainsDeparts']['prochainDepart'][1]['heureArrivee'])
             layer0.drawText(66, 55, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
         except Exception as ecx:
-            print("Exception dans l'affichge des donnees [2]:"+ str(ecx))
+            print("Exception dans l'affichge des donnees [2]:" + str(ecx))
         Screen.swapLayerContent(0, 1)
 
     else:
