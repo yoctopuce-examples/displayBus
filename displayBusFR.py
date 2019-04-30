@@ -4,10 +4,10 @@ from yoctopuce.yocto_wireless import *
 
 
 def http_req(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        json_response = response.json()
-        return json_response
+    reponse = requests.get(url)
+    if reponse.status_code == 200:
+        json_reponse = reponse.json()
+        return json_reponse
     return None
 
 
@@ -17,36 +17,36 @@ if len(sys.argv) > 1:
     hub_url = sys.argv[1].upper()
 
 errmsg = YRefParam()
-# API configuration
+# Configuration de l'Api
 if YAPI.RegisterHub(hub_url, errmsg) != YAPI.SUCCESS:
     sys.exit("init error" + errmsg.value)
 
-# Desable API exceptions
+# Desactive les exceptions dans l'API
 # YAPI.DisableExceptions()
 
-# Display wifi signal strength
+# Affichage du signal Wifi
 Wifi = YWireless.FirstWireless()
 
 Screen = YDisplay.FirstDisplay()
 if (Screen.isOnline()):
-    print("Screen connected!")
+    print("Ecran connecte")
 else:
-    print("Screen not connected..")
+    print("Ecran non connecte")
 
-# Clean screen
+# Efface l'ecran
 Screen.resetAll()
 
-# Retrieve screen dimmensions
+# Recuperation de la taille de l'ecran
 w = Screen.get_displayWidth()
 h = Screen.get_displayHeight()
 
-# Layer statement
+# Declaration des couches de l'ecran
 layer0 = Screen.get_displayLayer(0)
 layer1 = Screen.get_displayLayer(1)
 layer4 = Screen.get_displayLayer(4)
 layer0.clear()
 
-# Home screen
+# Affiche l'ecran de demarrage
 layer0.selectFont('Medium.yfm')
 layer0.drawRect(5, 10, 123, 54)
 layer0.drawRect(4, 9, 124, 55)
@@ -58,7 +58,6 @@ layer0.clear()
 while True:
     myDate = datetime.datetime.now()
     # print(str(myDate.hour) + ":" + str(myDate.minute) + ":" + str(myDate.second))
-    #Construct URL
     urlMollaz1 = 'http://www.tpg.ch/TempsReel-portlet/TRService?method=GetProchainsDepartsTriLigneSens&codeArret=MOLL&lignes=L&destinations=ATHENAZ'
     urlMollaz2 = 'http://www.tpg.ch/TempsReel-portlet/TRService?method=GetProchainsDepartsTriLigneSens&codeArret=MOLL&lignes=L&destinations=PXPLUSXR%20BERNEX'
 
@@ -66,13 +65,13 @@ while True:
         mollaz1 = http_req(urlMollaz1)
         mollazf1Flag = True
     except Exception as ecx:
-        print("Failure Accessing TPG Server (No 1)" + str(ecx))
+        print("Exception lors de l acces au serveur TPG (No 1)" + str(ecx))
         mollazf1Flag = False
     try:
         mollaz2 = http_req(urlMollaz2)
         mollazf2Flag = True
     except Exception as ecx:
-        print("Failure Accessing TPG Server (No 2):" + str(ecx))
+        print("Exception lors de l acces au serveur TPG (No 2):" + str(ecx))
         mollazf2Flag = False
 
     if (Screen.isOnline()):
@@ -81,19 +80,19 @@ while True:
         layer0.clear()
         layer0.selectFont('8x8.yfm')
 
-        # Display time
+        # Affichage de l'heure
         if (myDate.minute < 10):
             stringBuild = str(str(myDate.hour) + ":0" + str(myDate.minute))
         else:
             stringBuild = str(str(myDate.hour) + ":" + str(myDate.minute))
         layer0.drawText(0, 0, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
 
-        # Display wifi strength
+        # Affichage du signal Wifi
         if Wifi is not None:
             stringBuild = "RSSI:" + str(Wifi.get_linkQuality())
             layer0.drawText(128, 0, YDisplayLayer.ALIGN.TOP_RIGHT, stringBuild)
 
-        # Athenaz direction
+        # Direction Athenaz
         try:
             stringBuild = str(mollaz1['prochainsDeparts']['prochainDepart'][0]['destination'])
             layer0.drawText(1, 13, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
@@ -107,7 +106,7 @@ while True:
 
             layer0.drawRect(0, 42, 62, 63)
             layer0.drawText(62, 44, YDisplayLayer.ALIGN.TOP_RIGHT, "2")
-            if (mollaz1['prochainsDeparts']['prochainDepart'][1]['attente'] == "&gt;1h"):  # bug in server response
+            if (mollaz1['prochainsDeparts']['prochainDepart'][1]['attente'] == "&gt;1h"):  # bug de reponse TPG
                 stringBuild = "<60'"
             else:
                 stringBuild = str(mollaz1['prochainsDeparts']['prochainDepart'][1]['attente']) + "'"
@@ -115,9 +114,9 @@ while True:
             stringBuild = str(mollaz1['prochainsDeparts']['prochainDepart'][1]['heureArrivee'])
             layer0.drawText(1, 55, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
         except Exception as ecx:
-            print("Exception while displaying data [1]:" + str(ecx))
+            print("Exception dans l'affichge des donnees [1]:" + str(ecx))
 
-        # Bernex direction
+        # Direction Bernex
         try:
             stringBuild = str(mollaz2['prochainsDeparts']['prochainDepart'][0]['destination'])
             layer0.drawText(64, 13, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
@@ -131,7 +130,7 @@ while True:
 
             layer0.drawRect(64, 42, 126, 63)
             layer0.drawText(126, 44, YDisplayLayer.ALIGN.TOP_RIGHT, "2")
-            if (mollaz2['prochainsDeparts']['prochainDepart'][1]['attente'] == "&gt;1h"):  # bug in server response
+            if (mollaz2['prochainsDeparts']['prochainDepart'][1]['attente'] == "&gt;1h"):  # bug de reponse TPG
                 stringBuild = "<60'"
             else:
                 stringBuild = str(mollaz2['prochainsDeparts']['prochainDepart'][1]['attente']) + "'"
@@ -139,9 +138,9 @@ while True:
             stringBuild = str(mollaz2['prochainsDeparts']['prochainDepart'][1]['heureArrivee'])
             layer0.drawText(66, 55, YDisplayLayer.ALIGN.TOP_LEFT, stringBuild)
         except Exception as ecx:
-            print("Exception while displaying data [2]:" + str(ecx))
+            print("Exception dans l'affichge des donnees [2]:" + str(ecx))
         Screen.swapLayerContent(0, 1)
 
     else:
-        print("Screen not reachable")
+        print("Ecran non atteignable")
     time.sleep(1)
