@@ -13,4 +13,4 @@ Usage with remote Yocto-MaxiDisplay:
 displayBus.py 192.168.1.2
 ```
 
-For more details, read the full explanations on  [Yoctopuce blog](https://www.yoctopuce.com/EN/)
+For more details, read the full explanations on  [Yoctopuce blog](https://www.yoctopuce.com/EN/article/a-real-time-bus-display)
